@@ -1,0 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Amarante&family=Medula+One&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Orbitron:wght@400..900&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    font-family: "Amarante", serif;;
+}
+
+body{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    background-color: #719442;
+    margin-top: 30px;
+}
+
+body h1{
+    padding: 10px;
+    background-color: #cecda9;
+    margin-left: 20%;
+    margin-right: 20%;
+    border-radius: 20px;
+    box-shadow: #324d34 0px 0px 10px;
+}
+
+#tabuleiro{
+    display: grid;
+    grid-template-columns: repeat(25, auto);
+    background-color: #cecda9;
+    padding: 15px;
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 50px;
+    gap: 9px;
+    color: #324d34;
+    border-radius: 20px;
+    box-shadow: #324d34 0px 0px 10px;
+}
+
+/* ===== NOVAS REGRAS (funcionalidades do jogo) - nada acima foi alterado ===== */
+
+#tabuleiro{
+    position: relative;
+    isolation: isolate;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+#tabuleiro div{
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+}
+
+#tabuleiro div.selecionada,
+#tabuleiro div.encontrada{
+    color: #ebe4c2;
+}
+
+/* "Faixa" que conecta as letras selecionadas (fica atrás das letras) */
+.conexao{
+    position: absolute;
+    z-index: 0;
+    display: none;
+    pointer-events: none;
+    background-color: #729979;
+    transform-origin: center;
+    /* primeira letra: pontas arredondadas (esquerda, no sentido da seleção) */
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+/* palavra correta: sem curvatura, somente o preenchimento */
+.conexao.completa{
+    border-radius: 0;
+}
+
+.botao-lista{
+    position: fixed;
+    top: 30px;
+    right: 15px;
+    z-index: 20;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 20px;
+    background-color: #cecda9;
+    color: #324d34;
+    box-shadow: #324d34 0px 0px 10px;
+    cursor: pointer;
+}
+
+.menu-palavras{
+    position: fixed;
+    top: 85px;
+    right: 15px;
+    width: 230px;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+    padding: 15px;
+    background-color: #cecda9;
+    color: #324d34;
+    border-radius: 20px;
+    box-shadow: #324d34 0px 0px 10px;
+    z-index: 10;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+}
+
+.menu-palavras.aberto{
+    transform: translateX(0);
+}
+
+.menu-palavras h2{
+    margin-bottom: 10px;
+}
+
+.menu-palavras ul{
+    list-style: none;
+}
+
+.menu-palavras li{
+    padding: 4px 0;
+    letter-spacing: 1px;
+}
+
+.menu-palavras li.encontrada{
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.menu-palavras p{
+    margin-top: 12px;
+}
+
+/* ===== Modal de vitória ===== */
+.modal-vitoria{
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.modal-vitoria.aberto{
+    display: flex;
+}
+
+.modal{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    max-width: 90%;
+    padding: 30px;
+    background-color: #cecda9;
+    color: #324d34;
+    border-radius: 20px;
+    box-shadow: #324d34 0px 0px 10px;
+}
+
+.modal h2{
+    text-align: center;
+}
+
+.botao-reiniciar{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background-color: #729979;
+    color: #ebe4c2;
+    cursor: pointer;
+    width: 200px;
+    height: 60px;
+    font-size: larger;
+    transition: 0.3s;
+}
+
+.botao-reiniciar:hover{
+    background-color: #324d34;
+    transform: scale(1.05);
+}

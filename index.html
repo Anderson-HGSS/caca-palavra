@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caça Estagis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="cabecalho" class="cabecalho">
+        <h1>Caça Estagis ✨</h1>
+    </header>
+
+    <main id="tabuleiro"></main>
+
+    <button id="botao-lista" class="botao-lista" aria-expanded="true" aria-controls="menu-palavras">✕ Palavras</button>
+    <aside id="menu-palavras" class="menu-palavras aberto">
+        <h2>Palavras</h2>
+        <ul id="lista-palavras"></ul>
+        <p id="contador"></p>
+    </aside>
+
+    <div id="modal-vitoria" class="modal-vitoria">
+        <div class="modal">
+            <h2>🎉 Parabéns! Você encontrou todas as palavras!</h2>
+            <button id="botao-reiniciar" class="botao-reiniciar">Jogar novamente</button>
+        </div>
+    </div>
+</body>
+<script src="script.js"></script>
+</html>
