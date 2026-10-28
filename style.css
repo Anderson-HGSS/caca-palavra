@@ -212,39 +212,47 @@ body h1{
     margin-top: 12px;
 }
 
-/* ===== Responsivo: celular ===== */
+/* ===== Responsivo: celular (rolagem natural da página inteira) ===== */
 @media (max-width: 768px){
     body{
-        padding-bottom: 30px;
+        padding-bottom: 50px;
+        margin-top: 10px;
+        height: auto; /* Permite que a página cresça e role naturalmente */
+        overflow-y: auto; /* Garante a rolagem da tela toda */
     }
 
     body h1{
         margin-left: 10px;
-        margin-right: 70px; /* Garante espaço para o botão no topo direito ao lado do título */
-        font-size: 1.5em;
+        margin-right: 70px;
+        font-size: 1.2em;
+        padding: 6px;
     }
 
-    /* Mobile: 15 colunas */
+    /* Mobile: 15 colunas x 27 linhas com tamanho proporcional que flui na página */
     #tabuleiro{
         grid-template-columns: repeat(15, minmax(0, 1fr));
         margin-left: 10px;
         margin-right: 10px;
-        margin-top: 20px;
-        padding: 8px;
+        margin-top: 15px;
+        padding: 6px;
         gap: 2px;
-        font-size: calc((100vw - 60px) / 15 * 0.8);
+        /* Removemos o max-height restritivo para o tabuleiro acompanhar o fluxo da página */
+        max-height: none; 
+        overflow-y: visible;
+        font-size: calc((100vw - 30px) / 15 * 0.78);
     }
 
-    /* botão fixado no topo direito no mobile */
+    /* Botão fixado no topo direito */
     .botao-lista{
-        top: 35px;
+        top: 10px;
         bottom: auto;
-        right: 15px;
-        width: 44px;
-        height: 44px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
         padding: 0;
         border-radius: 10px;
-        font-size: 22px;
+        font-size: 18px;
+        z-index: 50;
     }
 
     .botao-lista .rotulo{
