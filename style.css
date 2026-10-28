@@ -3,7 +3,7 @@
 *{
     margin: 0;
     padding: 0;
-    font-family: "Amarante", serif;;
+    font-family: "Amarante", serif;
 }
 
 body{
@@ -25,6 +25,7 @@ body h1{
 
 #tabuleiro{
     display: grid;
+    /* Desktop: 25 colunas */
     grid-template-columns: repeat(25, auto);
     background-color: #cecda9;
     padding: 15px;
@@ -37,7 +38,7 @@ body h1{
     box-shadow: #324d34 0px 0px 10px;
 }
 
-/* ===== NOVAS REGRAS (funcionalidades do jogo) - nada acima foi alterado ===== */
+/* ===== REGRAS DO JOGO ===== */
 
 #tabuleiro{
     position: relative;
@@ -51,14 +52,15 @@ body h1{
     position: relative;
     z-index: 1;
     cursor: pointer;
+    color: #324d34;
 }
 
 #tabuleiro div.selecionada,
 #tabuleiro div.encontrada{
-    color: #ebe4c2;
+    color: #ebe4c2 !important;
 }
 
-/* "Faixa" que conecta as letras selecionadas (fica atrás das letras) */
+/* "Faixa" que conecta as letras selecionadas */
 .conexao{
     position: absolute;
     z-index: 0;
@@ -66,12 +68,10 @@ body h1{
     pointer-events: none;
     background-color: #729979;
     transform-origin: center;
-    /* primeira letra: pontas arredondadas (esquerda, no sentido da seleção) */
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
 }
 
-/* palavra correta: sem curvatura, somente o preenchimento */
 .conexao.completa{
     border-radius: 0;
 }
@@ -183,4 +183,84 @@ body h1{
 .botao-reiniciar:hover{
     background-color: #324d34;
     transform: scale(1.05);
+}
+
+.botao-lista .simbolo{
+    display: none;
+}
+
+#modal-palavras .modal{
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal ul{
+    list-style: none;
+}
+
+.modal li{
+    padding: 4px 0;
+    letter-spacing: 1px;
+}
+
+.modal li.encontrada{
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.modal p{
+    margin-top: 12px;
+}
+
+/* ===== Responsivo: celular ===== */
+@media (max-width: 768px){
+    body{
+        padding-bottom: 80px;
+    }
+
+    body h1{
+        margin-left: 10px;
+        margin-right: 10px;
+        font-size: 1.5em;
+    }
+
+    /* Mobile: 15 colunas */
+    #tabuleiro{
+        grid-template-columns: repeat(15, minmax(0, 1fr));
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 20px;
+        padding: 8px;
+        gap: 2px;
+        font-size: calc((100vw - 60px) / 15 * 0.8);
+    }
+
+    .botao-lista{
+        top: auto;
+        bottom: 15px;
+        right: 15px;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        border-radius: 10px;
+        font-size: 24px;
+    }
+
+    .botao-lista .rotulo{
+        display: none;
+    }
+
+    .botao-lista .simbolo{
+        display: inline;
+    }
+
+    .menu-palavras{
+        display: none;
+    }
+}
+
+@media (min-width: 769px){
+    #modal-palavras{
+        display: none;
+    }
 }

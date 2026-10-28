@@ -5,9 +5,19 @@ const menu = document.getElementById("menu-palavras");
 const botaoLista = document.getElementById("botao-lista");
 const modalVitoria = document.getElementById("modal-vitoria");
 const botaoReiniciar = document.getElementById("botao-reiniciar");
+const modalPalavras = document.getElementById("modal-palavras");
+const listaPalavrasModal = document.getElementById("lista-palavras-modal");
+const contadorModal = document.getElementById("contador-modal");
+const rotuloBotao = botaoLista.querySelector(".rotulo");
+const telaMobile = window.matchMedia("(max-width: 768px)");
 
 const alfabeto = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
-const TAMANHO = 25;          // tabuleiro 25 x 25 (625 letras)
+
+// Configuração dinâmica das dimensões:
+// Desktop: 25 colunas x 25 linhas
+// Mobile: 15 colunas x 27 linhas
+const COLUNAS = telaMobile.matches ? 15 : 25;
+const LINHAS = telaMobile.matches ? 26 : 25;
 const MAX_PALAVRAS = 10;     // no máximo 10 palavras sorteadas
 const MAX_LETRAS = 25;       // no máximo 25 letras por palavra
 
@@ -59,14 +69,14 @@ function sortear_palavras() {
 }
 
 function posicionar_palavra(palavra, grade) {
-    for (let tentativa = 0; tentativa < 300; tentativa++) {
+    for (let tentativa = 0; tentativa < 1000; tentativa++) {
         const [dl, dc] = direcoes[aleatorio(direcoes.length)];
-        const l0 = aleatorio(TAMANHO);
-        const c0 = aleatorio(TAMANHO);
+        const l0 = aleatorio(LINHAS);
+        const c0 = aleatorio(COLUNAS);
         const lf = l0 + dl * (palavra.length - 1);
         const cf = c0 + dc * (palavra.length - 1);
 
-        if (lf < 0 || lf >= TAMANHO || cf < 0 || cf >= TAMANHO) continue;
+        if (lf < 0 || lf >= LINHAS || cf < 0 || cf >= COLUNAS) continue;
 
         let cabe = true;
         for (let i = 0; i < palavra.length; i++) {
@@ -84,7 +94,7 @@ function posicionar_palavra(palavra, grade) {
 }
 
 function gera_tabuleiro() {
-    const grade = Array.from({ length: TAMANHO }, () => Array(TAMANHO).fill(null));
+    const grade = Array.from({ length: LINHAS }, () => Array(COLUNAS).fill(null));
 
     // palavras maiores primeiro facilita o encaixe
     const sorteadas = sortear_palavras().sort((a, b) => b.length - a.length);
@@ -94,8 +104,8 @@ function gera_tabuleiro() {
     tabuleiro.innerHTML = "";
     celulas = [];
 
-    for (let l = 0; l < TAMANHO; l++) {
-        for (let c = 0; c < TAMANHO; c++) {
+    for (let l = 0; l < LINHAS; l++) {
+        for (let c = 0; c < COLUNAS; c++) {
             const letra = grade[l][c] || alfabeto[aleatorio(alfabeto.length)];
             const div = document.createElement("div");
             div.textContent = letra;
@@ -104,31 +114,40 @@ function gera_tabuleiro() {
         }
     }
 
-    // a limpeza do tabuleiro (innerHTML = "") também apagava a faixa da seleção
     tabuleiro.appendChild(faixaSelecao);
 }
 
 // ---------- Lista lateral ----------
 function monta_lista() {
-    listaPalavras.innerHTML = "";
-    palavrasSorteadas.forEach(p => {
-        const li = document.createElement("li");
-        li.id = "palavra-" + p;
-        li.textContent = p;
-        listaPalavras.appendChild(li);
+    [listaPalavras, listaPalavrasModal].forEach(lista => {
+        lista.innerHTML = "";
+        palavrasSorteadas.forEach(p => {
+            const li = document.createElement("li");
+            li.dataset.palavra = p;
+            li.textContent = p;
+            lista.appendChild(li);
+        });
     });
     atualiza_contador();
 }
 
 function atualiza_contador() {
-    contador.textContent = `${palavrasEncontradas.size} / ${palavrasSorteadas.length} encontradas`;
+    const texto = `${palavrasEncontradas.size} / ${palavrasSorteadas.length} encontradas`;
+    contador.textContent = texto;
+    contadorModal.textContent = texto;
 }
 
 botaoLista.addEventListener("click", () => {
+    if (telaMobile.matches) {
+        modalPalavras.classList.add("aberto");
+        return;
+    }
     const aberto = menu.classList.toggle("aberto");
     botaoLista.setAttribute("aria-expanded", aberto);
-    botaoLista.textContent = (aberto ? "✕" : "☰") + " Palavras";
+    rotuloBotao.textContent = (aberto ? "✕" : "☰") + " Palavras";
 });
+
+modalPalavras.addEventListener("click", () => modalPalavras.classList.remove("aberto"));
 
 // ---------- Seleção com o mouse (ou toque) ----------
 let selecionando = false;
@@ -139,10 +158,9 @@ function indice_da_celula(el) {
     return el && el.parentElement === tabuleiro ? celulas.indexOf(el) : -1;
 }
 
-// Retorna os índices em linha reta (horizontal, vertical ou diagonal) entre dois pontos
 function linha_reta(indiceA, indiceB) {
-    const l0 = Math.floor(indiceA / TAMANHO), c0 = indiceA % TAMANHO;
-    const l1 = Math.floor(indiceB / TAMANHO), c1 = indiceB % TAMANHO;
+    const l0 = Math.floor(indiceA / COLUNAS), c0 = indiceA % COLUNAS;
+    const l1 = Math.floor(indiceB / COLUNAS), c1 = indiceB % COLUNAS;
     const dl = l1 - l0, dc = c1 - c0;
 
     if (dl !== 0 && dc !== 0 && Math.abs(dl) !== Math.abs(dc)) return null;
@@ -151,12 +169,11 @@ function linha_reta(indiceA, indiceB) {
     const sl = Math.sign(dl), sc = Math.sign(dc);
     const indices = [];
     for (let i = 0; i <= passos; i++) {
-        indices.push((l0 + sl * i) * TAMANHO + (c0 + sc * i));
+        indices.push((l0 + sl * i) * COLUNAS + (c0 + sc * i));
     }
     return indices;
 }
 
-// Cria a "faixa" de fundo que liga as letras
 function cria_conexao() {
     const faixa = document.createElement("span");
     faixa.className = "conexao";
@@ -164,7 +181,6 @@ function cria_conexao() {
     return faixa;
 }
 
-// Estica e gira a faixa da primeira à última letra (qualquer das 8 direções)
 function posiciona_conexao(faixa, indices) {
     const a = celulas[indices[0]];
     const b = celulas[indices[indices.length - 1]];
@@ -173,7 +189,6 @@ function posiciona_conexao(faixa, indices) {
     const dx = bx - ax, dy = by - ay;
     const w = a.offsetWidth, h = a.offsetHeight;
 
-    // mesma espessura em todas as direções (padrão da diagonal)
     const espessura = Math.min(w, h);
     const extra = espessura;
 
@@ -191,7 +206,7 @@ function posiciona_conexao(faixa, indices) {
 }
 
 const faixaSelecao = cria_conexao();
-const faixasEncontradas = []; // { indices, faixa }
+const faixasEncontradas = [];
 
 function pinta_selecao(indices) {
     selecaoAtual.forEach(i => celulas[i].classList.remove("selecionada"));
@@ -220,16 +235,15 @@ function finaliza_selecao() {
         palavrasEncontradas.add(achada);
         selecaoAtual.forEach(i => celulas[i].classList.add("encontrada"));
 
-        // palavra certa: faixa permanente, sem curvatura
         const faixa = cria_conexao();
         faixa.classList.add("completa");
         posiciona_conexao(faixa, selecaoAtual);
         faixasEncontradas.push({ indices: [...selecaoAtual], faixa });
 
-        document.getElementById("palavra-" + achada).classList.add("encontrada");
+        document.querySelectorAll(`[data-palavra="${achada}"]`)
+            .forEach(li => li.classList.add("encontrada"));
         atualiza_contador();
 
-        // todas as palavras encontradas: mostra o modal de vitória
         if (palavrasEncontradas.size === palavrasSorteadas.length) {
             modalVitoria.classList.add("aberto");
         }
@@ -239,7 +253,6 @@ function finaliza_selecao() {
     indiceInicio = null;
 }
 
-// Se a janela mudar de tamanho, as faixas precisam acompanhar as letras
 window.addEventListener("resize", () => {
     faixasEncontradas.forEach(f => posiciona_conexao(f.faixa, f.indices));
     if (selecaoAtual.length) posiciona_conexao(faixaSelecao, selecaoAtual);
@@ -254,22 +267,34 @@ tabuleiro.addEventListener("pointerdown", (e) => {
     pinta_selecao([indice]);
 });
 
-tabuleiro.addEventListener("pointermove", (e) => {
+function processarMovimento(clientX, clientY) {
     if (!selecionando) return;
-    const alvo = document.elementFromPoint(e.clientX, e.clientY);
+    const alvo = document.elementFromPoint(clientX, clientY);
     const indice = indice_da_celula(alvo);
     if (indice < 0) return;
 
     const linha = linha_reta(indiceInicio, indice);
     if (linha) pinta_selecao(linha);
+}
+
+tabuleiro.addEventListener("pointermove", (e) => {
+    processarMovimento(e.clientX, e.clientY);
 });
+
+tabuleiro.addEventListener("touchmove", (e) => {
+    if (!selecionando) return;
+    const touch = e.touches[0];
+    processarMovimento(touch.clientX, touch.clientY);
+}, { passive: true });
 
 document.addEventListener("pointerup", finaliza_selecao);
 document.addEventListener("pointercancel", finaliza_selecao);
+document.addEventListener("touchend", finaliza_selecao);
 
-// ---------- Reiniciar o jogo ----------
+// Recarrega se a tela alternar entre mobile e desktop
+telaMobile.addEventListener("change", () => location.reload());
+
 botaoReiniciar.addEventListener("click", () => location.reload());
 
-// ---------- Início ----------
 gera_tabuleiro();
 monta_lista();
